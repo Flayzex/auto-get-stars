@@ -20,15 +20,25 @@ async def start():
     await client.start()
 
     bot_chat = await client.get_chat('GoStars_robot')
+    messages = client.get_chat_history(chat_id=bot_chat.id, limit=1)
+    async for i in messages:
+        message: Message = i
 
-    message: Message = await client.get_messages(bot_chat.id, 1272)
     while True:
         try:
+
+            if not message.reply_markup:
+                await client.send_message(bot_chat.id, '/start')
+                time.sleep(2)
+                messages = client.get_chat_history(chat_id=bot_chat.id, limit=1)
+                async for i in messages:
+                    message: Message = i
+
             logging.info(await message.click(0))
             time.sleep(121)
         except Exception as e:
             logging.warning(e)
-            asyncio.sleep(10)
+            await asyncio.sleep(10)
 
 
     await idle()
